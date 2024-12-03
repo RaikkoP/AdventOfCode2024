@@ -51,6 +51,51 @@ func splitArray(content string) ([]int, []int) {
 	return convertFromStringToInt(temp1), convertFromStringToInt(temp2)
 }
 
+// For part 1
+func distanceBetween(sorted1 []int, sorted2 []int) {
+	// calculate sum
+	var sum int
+	for i := 0; i < len(sorted1); i++ {
+		diff := math.Abs(float64(sorted1[i] - sorted2[i]))
+		sum += int(diff)
+	}
+
+	fmt.Println("Total sum:", sum)
+}
+
+func intArrayToStringArray(arr []int) []string {
+	var output []string
+
+	for _, number := range arr {
+		temp := strconv.Itoa(number)
+		output = append(output, temp)
+	}
+
+	return output
+}
+
+// For part 2
+func simularityScore(sorted1 []int, sorted2 []int) {
+	temp1 := intArrayToStringArray(sorted1)
+	temp2 := intArrayToStringArray(sorted2)
+	total := 0
+
+	for _, num1 := range temp1 {
+		count := 0
+		for _, num2 := range temp2 {
+			if num1 == num2 {
+				count++
+			}
+		}
+		r, e := strconv.Atoi(num1)
+		if e != nil {
+			panic(e)
+		}
+		total = total + (r * count)
+	}
+	fmt.Println("Simularity total: ", total)
+}
+
 func main() {
 	var array1, array2 []int
 
@@ -65,14 +110,9 @@ func main() {
 	sorted1 := bubbleSort(array1)
 	sorted2 := bubbleSort(array2)
 
-	// calculate sum
-	var sum int
-	for i := 0; i < len(sorted1); i++ {
-		diff := math.Abs(float64(sorted1[i] - sorted2[i]))
-		sum += int(diff)
-		fmt.Printf("sorted1[%d]: %d, sorted2[%d]: %d, Difference: %.0f\n",
-			i, sorted1[i], i, sorted2[i], diff)
-	}
+	// Distance between
+	distanceBetween(sorted1, sorted2)
 
-	fmt.Println("Total sum:", sum)
+	// Simularity score
+	simularityScore(sorted1, sorted2)
 }
