@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -26,6 +25,53 @@ func convertStringArrayToInt(arr []string) [][]int {
 	return result
 }
 
+func checkIfSafe(list []int) bool {
+	if len(list) < 2 {
+		return true
+	}
+
+	// Check increasing sequence
+	isIncreasing := true
+	for i := 1; i < len(list); i++ {
+		diff := list[i] - list[i-1]
+		if diff < 1 || diff > 3 {
+			isIncreasing = false
+			break
+		}
+	}
+	if isIncreasing {
+		return true
+	}
+
+	// Check decreasing sequence
+	isDecreasing := true
+	for i := 1; i < len(list); i++ {
+		diff := list[i-1] - list[i]
+		if diff < 1 || diff > 3 {
+			isDecreasing = false
+			break
+		}
+	}
+	return isDecreasing
+}
+
+func checkIfSafeWithRemoval(list []int) bool {
+	if checkIfSafe(list) {
+		return true
+	}
+
+	for i := 0; i < len(list); i++ {
+		modifiedList := make([]int, 0, len(list)-1)
+		modifiedList = append(modifiedList, list[:i]...)
+		modifiedList = append(modifiedList, list[i+1:]...)
+
+		if checkIfSafe(modifiedList) {
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
 	res, err := os.ReadFile("./input.txt")
 
@@ -37,39 +83,8 @@ func main() {
 	count := 0
 
 	for _, list := range arr {
-		var trend int
-		if list[0] > list[1] {
-			trend = -1 // Decreasing
-		} else if list[0] < list[1] {
-			trend = 1 // Increasing
-		} else {
-			continue
-		}
-		for i := 2; i < len(list); i++ {
-			l := list[i-2] // Left
-			m := list[i-1] // Middle
-			r := list[i]   // Right
-
-			if trend == 1 {
-				if l > m || m > r {
-					break
-				}
-			} else if trend == -1 {
-				if l < m || m < r {
-					break
-				}
-			}
-
-			lDif := math.Abs(float64(l - m))
-			rDif := math.Abs(float64(m - r))
-
-			if lDif > 3 || lDif < 1 || rDif > 3 || rDif < 1 {
-				break
-			}
-
-			if i == len(list)-1 {
-				count++
-			}
+		if checkIfSafeWithRemoval(list) {
+			count++
 		}
 	}
 	fmt.Println(count)
